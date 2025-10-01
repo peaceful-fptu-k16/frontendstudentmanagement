@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ thống Quản lý Sinh viên</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="styles/main.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Đang tải...</p>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-graduation-cap"></i>
+                    <h1>Quản lý Sinh viên</h1>
+                </div>
+                <nav class="nav">
+                    <button class="nav-btn active" data-section="students">
+                        <i class="fas fa-users"></i>
+                        Danh sách SV
+                    </button>
+                    <button class="nav-btn" data-section="analytics">
+                        <i class="fas fa-chart-bar"></i>
+                        Phân tích
+                    </button>
+                    <button class="nav-btn" data-section="import-export">
+                        <i class="fas fa-file-excel"></i>
+                        Import/Export
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Students Section -->
+            <section id="students-section" class="section active">
+                <!-- Controls -->
+                <div class="controls">
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Tìm kiếm sinh viên..." aria-label="Tìm kiếm sinh viên">
+                    </div>
+                    <div class="filters">
+                        <select id="hometownFilter">
+                            <option value="">Tất cả quê quán</option>
+                        </select>
+                        <select id="gradeFilter">
+                            <option value="">Tất cả xếp loại</option>
+                            <option value="A">Loại A</option>
+                            <option value="B">Loại B</option>
+                            <option value="C">Loại C</option>
+                            <option value="D">Loại D</option>
+                            <option value="F">Loại F</option>
+                        </select>
+                        <button class="btn btn-secondary btn-sm" id="clearFiltersBtn" title="Xóa bộ lọc">
+                            <i class="fas fa-times"></i>
+                            Xóa bộ lọc
+                        </button>
+                    </div>
+                    <button class="btn btn-primary" id="addStudentBtn">
+                        <i class="fas fa-plus"></i>
+                        Thêm sinh viên
+                    </button>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalStudents">0</h3>
+                            <p>Tổng sinh viên</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-calculator"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="avgMath">0.0</h3>
+                            <p>Điểm TB Toán</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="avgLiterature">0.0</h3>
+                            <p>Điểm TB Văn</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="avgEnglish">0.0</h3>
+                            <p>Điểm TB Anh</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Students Table -->
+                <div class="table-container">
+                    <table class="students-table" id="studentsTable">
+                        <thead>
+                            <tr>
+                                <th class="select-column">
+                                    <input type="checkbox" id="selectAllStudents" onchange="studentsManager.toggleSelectAll(this.checked)" aria-label="Chọn tất cả sinh viên">
+                                </th>
+                                <th class="sortable" data-sort="student_id">
+                                    Mã SV <i class="fas fa-sort sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="full_name">
+                                    Họ tên <i class="fas fa-sort sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="email">
+                                    Email <i class="fas fa-sort sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="birth_date">
+                                    Ngày sinh <i class="fas fa-sort sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="hometown">
+                                    Quê quán <i class="fas fa-sort sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="math_score">
+                                    Điểm Toán <i class="fas fa-sort sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="literature_score">
+                                    Điểm Văn <i class="fas fa-sort sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="english_score">
+                                    Điểm Anh <i class="fas fa-sort sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="average_score">
+                                    Điểm TB <i class="fas fa-sort sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="grade">
+                                    Xếp loại <i class="fas fa-sort sort-icon"></i>
+                                </th>
+                                <th class="actions-column">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentsTableBody">
+                            <!-- Data will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination Controls -->
+                <div class="pagination-wrapper">
+                    <div class="page-size-selector">
+                        <label for="pageSizeSelect">Hiển thị:</label>
+                        <select id="pageSizeSelect" class="form-control">
+                            <option value="5">5 sinh viên</option>
+                            <option value="10" selected>10 sinh viên</option>
+                            <option value="20">20 sinh viên</option>
+                            <option value="50">50 sinh viên</option>
+                        </select>
+                    </div>
+                    
+                    <div class="pagination" id="pagination">
+                        <!-- Pagination will be populated by JavaScript -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Analytics Section -->
+            <section id="analytics-section" class="section">
+                <div class="analytics-header">
+                    <h2>Phân tích dữ liệu sinh viên</h2>
+                    <button class="btn btn-secondary" id="refreshAnalytics">
+                        <i class="fas fa-sync-alt"></i>
+                        Làm mới
+                    </button>
+                </div>
+
+                <div class="analytics-grid">
+                    <!-- Overview Cards -->
+                    <div class="analytics-card overview-card">
+                        <h3><i class="fas fa-chart-line"></i> Tổng quan</h3>
+                        <div id="overviewStats" class="overview-stats">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div class="analytics-card stats-card">
+                        <h3><i class="fas fa-medal"></i> Thống kê nhanh</h3>
+                        <div id="quickStats" class="quick-stats">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Grade Distribution Chart -->
+                    <div class="analytics-card chart-card">
+                        <h3><i class="fas fa-chart-pie"></i> Phân bố xếp loại</h3>
+                        <div class="chart-container">
+                            <canvas id="gradeChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Score Comparison Chart -->
+                    <div class="analytics-card chart-card">
+                        <h3><i class="fas fa-chart-bar"></i> So sánh điểm môn học</h3>
+                        <div class="chart-container">
+                            <canvas id="scoreChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Score Ranges Distribution -->
+                    <div class="analytics-card chart-card">
+                        <h3><i class="fas fa-chart-area"></i> Phân bố theo mức điểm</h3>
+                        <div class="chart-container">
+                            <canvas id="scoreRangeChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Hometown Distribution -->
+                    <div class="analytics-card chart-card">
+                        <h3><i class="fas fa-map-marker-alt"></i> Phân bố theo quê quán</h3>
+                        <div class="chart-container">
+                            <canvas id="hometownChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Top Performers -->
+                    <div class="analytics-card leaderboard-card">
+                        <h3><i class="fas fa-trophy"></i> Top sinh viên xuất sắc</h3>
+                        <div id="topPerformers" class="top-performers">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Performance Insights -->
+                    <div class="analytics-card insights-card">
+                        <h3><i class="fas fa-lightbulb"></i> Nhận xét & đề xuất</h3>
+                        <div id="performanceInsights" class="performance-insights">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Import/Export Section -->
+            <section id="import-export-section" class="section">
+                <div class="import-export-header">
+                    <h2>Import/Export dữ liệu</h2>
+                </div>
+
+                <div class="import-export-grid">
+                    <!-- Import Card -->
+                    <div class="import-export-card">
+                        <div class="card-header">
+                            <i class="fas fa-upload"></i>
+                            <h3>Import dữ liệu</h3>
+                        </div>
+                        <div class="card-content">
+                            <p>Tải lên file Excel hoặc CSV chứa dữ liệu sinh viên</p>
+                            <div class="file-upload">
+                                <input type="file" id="importFile" accept=".xlsx,.xls,.csv" hidden aria-label="Chọn file Excel hoặc CSV để import">
+                                <button class="btn btn-primary" id="selectFileBtn">
+                                    <i class="fas fa-folder-open"></i>
+                                    Chọn file
+                                </button>
+                                <span id="fileName" class="file-name"></span>
+                            </div>
+                            
+                            <div class="import-options">
+                                <label class="checkbox-label" for="updateExisting">
+                                    <input type="checkbox" id="updateExisting" checked aria-label="Cập nhật sinh viên đã tồn tại">
+                                    <span class="checkmark"></span>
+                                    Cập nhật sinh viên đã tồn tại
+                                </label>
+                                <label class="checkbox-label" for="skipErrors">
+                                    <input type="checkbox" id="skipErrors" checked aria-label="Bỏ qua dòng lỗi">
+                                    <span class="checkmark"></span>
+                                    Bỏ qua dòng lỗi
+                                </label>
+                            </div>
+                            
+                            <button class="btn btn-success" id="importBtn" disabled>
+                                <i class="fas fa-upload"></i>
+                                Import
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Export Card -->
+                    <div class="import-export-card">
+                        <div class="card-header">
+                            <i class="fas fa-download"></i>
+                            <h3>Export dữ liệu</h3>
+                        </div>
+                        <div class="card-content">
+                            <p>Tải xuống dữ liệu sinh viên theo định dạng mong muốn</p>
+                            <div class="export-options">
+                                <button class="btn btn-secondary" id="exportExcelBtn">
+                                    <i class="fas fa-file-excel"></i>
+                                    Export Excel
+                                </button>
+                                <button class="btn btn-secondary" id="exportCsvBtn">
+                                    <i class="fas fa-file-csv"></i>
+                                    Export CSV
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Template Card -->
+                    <div class="import-export-card">
+                        <div class="card-header">
+                            <i class="fas fa-file-download"></i>
+                            <h3>Template</h3>
+                        </div>
+                        <div class="card-content">
+                            <p>Tải xuống file mẫu để import dữ liệu</p>
+                            <div class="template-options">
+                                <button class="btn btn-info" id="downloadTemplateBtn">
+                                    <i class="fas fa-download"></i>
+                                    Tải template CSV
+                                </button>
+                                <button class="btn btn-outline-info" id="downloadInstructionsBtn">
+                                    <i class="fas fa-question-circle"></i>
+                                    Hướng dẫn
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bulk Operations Card -->
+                    <div class="import-export-card">
+                        <div class="card-header">
+                            <i class="fas fa-tasks"></i>
+                            <h3>Thao tác hàng loạt</h3>
+                        </div>
+                        <div class="card-content">
+                            <p>Thực hiện các thao tác trên nhiều sinh viên cùng lúc</p>
+                            <div class="bulk-options">
+                                <button class="btn btn-warning" id="clearAllBtn">
+                                    <i class="fas fa-trash-alt"></i>
+                                    Xóa tất cả
+                                </button>
+                                <button class="btn btn-info" id="exportSelectedBtn" disabled>
+                                    <i class="fas fa-file-export"></i>
+                                    Export đã chọn
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Import Results -->
+                <div id="importResults" class="import-results hidden">
+                    <h3>Kết quả Import</h3>
+                    <div id="importResultsContent">
+                        <!-- Results will be populated by JavaScript -->
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Student Modal -->
+    <div id="studentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Thêm sinh viên mới</h2>
+                <button class="modal-close" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="studentForm" class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="studentId">Mã sinh viên <span class="required">*</span></label>
+                        <input type="text" id="studentId" name="student_id" required>
+                        <div class="form-hint">6-12 ký tự alphanumeric</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="firstName">Họ <span class="required">*</span></label>
+                        <input type="text" id="firstName" name="first_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Tên <span class="required">*</span></label>
+                        <input type="text" id="lastName" name="last_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email">
+                    </div>
+                    <div class="form-group">
+                        <label for="birthDate">Ngày sinh</label>
+                        <input type="date" id="birthDate" name="birth_date">
+                    </div>
+                    <div class="form-group">
+                        <label for="hometown">Quê quán</label>
+                        <input type="text" id="hometown" name="hometown">
+                    </div>
+                    <div class="form-group">
+                        <label for="mathScore">Điểm Toán</label>
+                        <input type="number" id="mathScore" name="math_score" min="0" max="10" step="0.1">
+                        <div class="form-hint">0-10</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="literatureScore">Điểm Văn</label>
+                        <input type="number" id="literatureScore" name="literature_score" min="0" max="10" step="0.1">
+                        <div class="form-hint">0-10</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="englishScore">Điểm Tiếng Anh</label>
+                        <input type="number" id="englishScore" name="english_score" min="0" max="10" step="0.1">
+                        <div class="form-hint">0-10</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">Hủy</button>
+                    <button type="submit" class="btn btn-primary" id="saveBtn">Lưu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="delete-modal">
+        <div class="delete-modal-backdrop"></div>
+        <div class="delete-modal-content">
+            <div class="delete-modal-header">
+                <div class="delete-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h3>Xác nhận xóa sinh viên</h3>
+                <p class="delete-subtitle">Hành động này không thể hoàn tác</p>
+            </div>
+            
+            <div class="delete-modal-body">
+                <div class="student-card">
+                    <div class="student-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="student-details">
+                        <h4 id="deleteStudentName">Tên sinh viên</h4>
+                        <p id="deleteStudentId">Mã SV: SV123456</p>
+                    </div>
+                </div>
+                
+                <div class="warning-box">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div>
+                        <p><strong>Cảnh báo!</strong></p>
+                        <p>Tất cả dữ liệu liên quan đến sinh viên này sẽ bị xóa vĩnh viễn khỏi hệ thống.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="delete-modal-footer">
+                <button type="button" class="btn-cancel" id="cancelDeleteBtn">
+                    <i class="fas fa-arrow-left"></i>
+                    Hủy bỏ
+                </button>
+                <button type="button" class="btn-delete" id="confirmDeleteBtn">
+                    <i class="fas fa-trash-alt"></i>
+                    Xóa vĩnh viễn
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification">
+        <div class="notification-content">
+            <i class="notification-icon"></i>
+            <span class="notification-message"></span>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/components.js"></script>
+    <script src="js/students.js"></script>
+    <script src="js/analytics.js"></script>
+    <script src="js/import-export.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
