@@ -28,13 +28,19 @@ class App {
      * Bind tất cả navigation events
      */
     bindEvents() {
-        // Navigation buttons (Students, Analytics, Import/Export)
+        // Navigation buttons (Students, Analytics)
         document.querySelectorAll('.nav-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const section = e.currentTarget.dataset.section;
                 this.showSection(section);
             });
         });
+
+        // Crawl button
+        const crawlBtn = document.getElementById('crawlBtn');
+        if (crawlBtn) {
+            crawlBtn.addEventListener('click', () => this.handleCrawl());
+        }
 
         // Handle browser back/forward buttons
         window.addEventListener('popstate', (e) => {
@@ -48,6 +54,35 @@ class App {
                 this.handleApiDisconnection();
             }
         });
+    }
+
+    /**
+     * Handle Crawl action
+     */
+    async handleCrawl() {
+        try {
+            loading.show();
+            
+            // Call crawl API endpoint
+            const response = await api.fetch('/crawl', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            notifications.success('Crawl thành công! Dữ liệu đã được cập nhật.');
+            
+            // Refresh student list if on students section
+            if (this.currentSection === 'students' && window.studentsManager) {
+                await studentsManager.loadStudents();
+            }
+        } catch (error) {
+            console.error('Crawl error:', error);
+            notifications.error(error.message || 'Không thể thực hiện crawl');
+        } finally {
+            loading.hide();
+        }
     }
 
     /**
@@ -220,12 +255,12 @@ document.addEventListener('keydown', (e) => {
         }
     }
     
-    // Number keys 1-3: Switch sections
-    if (e.key >= '1' && e.key <= '3' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+    // Number keys 1-2: Switch sections
+    if (e.key >= '1' && e.key <= '2' && !e.ctrlKey && !e.metaKey && !e.altKey) {
         // Only if not typing in an input
         if (!['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) {
             e.preventDefault();
-            const sections = ['students', 'analytics', 'import-export'];
+            const sections = ['students', 'analytics'];
             const sectionIndex = parseInt(e.key) - 1;
             if (sections[sectionIndex]) {
                 app.showSection(sections[sectionIndex]);

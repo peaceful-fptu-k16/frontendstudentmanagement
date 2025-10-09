@@ -35,9 +35,9 @@
                         <i class="fas fa-chart-bar"></i>
                         Phân tích
                     </button>
-                    <button class="nav-btn" data-section="import-export">
-                        <i class="fas fa-file-excel"></i>
-                        Import/Export
+                    <button class="btn btn-primary" id="crawlBtn" style="margin-left: auto;">
+                        <i class="fas fa-spider"></i>
+                        Crawl
                     </button>
                 </nav>
             </div>
@@ -259,125 +259,9 @@
                     </div>
                 </div>
             </section>
-
-            <!-- Import/Export Section -->
-            <section id="import-export-section" class="section">
-                <div class="import-export-header">
-                    <h2>Import/Export dữ liệu</h2>
-                </div>
-
-                <div class="import-export-grid">
-                    <!-- Import Card -->
-                    <div class="import-export-card">
-                        <div class="card-header">
-                            <i class="fas fa-upload"></i>
-                            <h3>Import dữ liệu</h3>
-                        </div>
-                        <div class="card-content">
-                            <p>Tải lên file Excel hoặc CSV chứa dữ liệu sinh viên</p>
-                            <div class="file-upload">
-                                <input type="file" id="importFile" accept=".xlsx,.xls,.csv" hidden aria-label="Chọn file Excel hoặc CSV để import">
-                                <button class="btn btn-primary" id="selectFileBtn">
-                                    <i class="fas fa-folder-open"></i>
-                                    Chọn file
-                                </button>
-                                <span id="fileName" class="file-name"></span>
-                            </div>
-                            
-                            <div class="import-options">
-                                <label class="checkbox-label" for="updateExisting">
-                                    <input type="checkbox" id="updateExisting" checked aria-label="Cập nhật sinh viên đã tồn tại">
-                                    <span class="checkmark"></span>
-                                    Cập nhật sinh viên đã tồn tại
-                                </label>
-                                <label class="checkbox-label" for="skipErrors">
-                                    <input type="checkbox" id="skipErrors" checked aria-label="Bỏ qua dòng lỗi">
-                                    <span class="checkmark"></span>
-                                    Bỏ qua dòng lỗi
-                                </label>
-                            </div>
-                            
-                            <button class="btn btn-success" id="importBtn" disabled>
-                                <i class="fas fa-upload"></i>
-                                Import
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Export Card -->
-                    <div class="import-export-card">
-                        <div class="card-header">
-                            <i class="fas fa-download"></i>
-                            <h3>Export dữ liệu</h3>
-                        </div>
-                        <div class="card-content">
-                            <p>Tải xuống dữ liệu sinh viên theo định dạng mong muốn</p>
-                            <div class="export-options">
-                                <button class="btn btn-secondary" id="exportExcelBtn">
-                                    <i class="fas fa-file-excel"></i>
-                                    Export Excel
-                                </button>
-                                <button class="btn btn-secondary" id="exportCsvBtn">
-                                    <i class="fas fa-file-csv"></i>
-                                    Export CSV
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Template Card -->
-                    <div class="import-export-card">
-                        <div class="card-header">
-                            <i class="fas fa-file-download"></i>
-                            <h3>Template</h3>
-                        </div>
-                        <div class="card-content">
-                            <p>Tải xuống file mẫu để import dữ liệu</p>
-                            <div class="template-options">
-                                <button class="btn btn-info" id="downloadTemplateBtn">
-                                    <i class="fas fa-download"></i>
-                                    Tải template CSV
-                                </button>
-                                <button class="btn btn-outline-info" id="downloadInstructionsBtn">
-                                    <i class="fas fa-question-circle"></i>
-                                    Hướng dẫn
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Bulk Operations Card -->
-                    <div class="import-export-card">
-                        <div class="card-header">
-                            <i class="fas fa-tasks"></i>
-                            <h3>Thao tác hàng loạt</h3>
-                        </div>
-                        <div class="card-content">
-                            <p>Thực hiện các thao tác trên nhiều sinh viên cùng lúc</p>
-                            <div class="bulk-options">
-                                <button class="btn btn-warning" id="clearAllBtn">
-                                    <i class="fas fa-trash-alt"></i>
-                                    Xóa tất cả
-                                </button>
-                                <button class="btn btn-info" id="exportSelectedBtn" disabled>
-                                    <i class="fas fa-file-export"></i>
-                                    Export đã chọn
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Import Results -->
-                <div id="importResults" class="import-results hidden">
-                    <h3>Kết quả Import</h3>
-                    <div id="importResultsContent">
-                        <!-- Results will be populated by JavaScript -->
-                    </div>
-                </div>
-            </section>
         </div>
     </main>
+
 
     <!-- Student Modal -->
     <div id="studentModal" class="modal">
@@ -500,7 +384,6 @@
     <script src="js/components.js"></script>
     <script src="js/students.js"></script>
     <script src="js/analytics.js"></script>
-    <script src="js/import-export.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>
