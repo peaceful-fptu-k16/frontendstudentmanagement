@@ -1,20 +1,34 @@
-// Main Application Controller
+// =====================================================
+// MAIN APPLICATION CONTROLLER
+// =====================================================
+// App class - Entry point của application, handle navigation & initialization
+
+/**
+ * App Class
+ * Main controller quản lý navigation, API connection, và initialization
+ */
 class App {
     constructor() {
-        this.currentSection = 'students';
-        this.isApiConnected = false;
+        this.currentSection = 'students';  // Section hiện tại
+        this.isApiConnected = false;       // API connection status
         
         this.initialize();
     }
 
+    /**
+     * Initialize application
+     */
     async initialize() {
         this.bindEvents();
         await this.checkApiConnection();
         this.showSection('students');
     }
 
+    /**
+     * Bind tất cả navigation events
+     */
     bindEvents() {
-        // Navigation buttons
+        // Navigation buttons (Students, Analytics, Import/Export)
         document.querySelectorAll('.nav-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const section = e.currentTarget.dataset.section;
@@ -22,7 +36,7 @@ class App {
             });
         });
 
-        // Handle browser back/forward
+        // Handle browser back/forward buttons
         window.addEventListener('popstate', (e) => {
             const section = e.state?.section || 'students';
             this.showSection(section, false);
@@ -36,6 +50,9 @@ class App {
         });
     }
 
+    /**
+     * Check API connection với health check endpoint
+     */
     async checkApiConnection() {
         try {
             this.isApiConnected = await api.healthCheck();
@@ -50,6 +67,9 @@ class App {
         }
     }
 
+    /**
+     * Handle API disconnection
+     */
     handleApiDisconnection() {
         if (this.isApiConnected) {
             this.isApiConnected = false;
@@ -57,6 +77,11 @@ class App {
         }
     }
 
+    /**
+     * Show/hide sections dựa vào navigation
+     * @param {string} sectionName - Tên section (students/analytics/import-export)
+     * @param {boolean} updateHistory - Update browser history
+     */
     showSection(sectionName, updateHistory = true) {
         // Hide all sections
         document.querySelectorAll('.section').forEach(section => {

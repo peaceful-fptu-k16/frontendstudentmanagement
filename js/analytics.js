@@ -1,22 +1,36 @@
-// Analytics Module
+// =====================================================
+// ANALYTICS MODULE
+// =====================================================
+// Module hiển thị charts và statistics của student data
+
+/**
+ * AnalyticsManager Class
+ * Quản lý việc tạo charts và hiển thị analytics
+ */
 class AnalyticsManager {
     constructor() {
-        this.charts = {};
-        this.data = null;
+        this.charts = {};        // Object chứa Chart.js instances
+        this.data = null;        // Analytics data
         
         this.bindEvents();
     }
 
+    /**
+     * Bind events (refresh button)
+     */
     bindEvents() {
-        // Refresh button
+        // Refresh analytics button
         document.getElementById('refreshAnalytics').addEventListener('click', () => {
             this.loadAnalytics();
         });
     }
 
+    /**
+     * Load analytics data và render charts
+     */
     async loadAnalytics() {
         try {
-            // Only load if analytics section is active
+            // Chỉ load nếu analytics section đang active
             const analyticsSection = document.getElementById('analytics-section');
             if (!analyticsSection || !analyticsSection.classList.contains('active')) {
                 return;
@@ -24,11 +38,11 @@ class AnalyticsManager {
 
             loading.show();
             
-            // Get data from StudentsManager if available
+            // Lấy data từ StudentsManager nếu có (client-side analysis)
             if (window.studentsManager && window.studentsManager.allStudents) {
                 this.data = this.analyzeLocalData(window.studentsManager.allStudents);
             } else {
-                // Fallback to API
+                // Fallback: Lấy từ API
                 const [summary, scoreComparison, hometownAnalysis] = await Promise.all([
                     api.getAnalyticsSummary(),
                     api.getScoreComparison(),
@@ -42,6 +56,7 @@ class AnalyticsManager {
                 };
             }
 
+            // Render UI
             this.renderOverview();
             this.renderCharts();
 

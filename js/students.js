@@ -1,17 +1,31 @@
-// Students Management Module
+// =====================================================
+// STUDENTS MANAGEMENT MODULE
+// =====================================================
+// Module manages all CRUD operations for students
+// Includes: Display, Filter, Sort, Pagination, Edit, Delete
+
+/**
+ * StudentsManager Class
+ * Main class managing students - handles all operations
+ */
 class StudentsManager {
     constructor() {
-        this.currentPage = 1;
-        this.totalPages = 1;
-        this.totalItems = 0;
-        this.pageSize = 10; // Number of students per page
-        this.students = [];
-        this.allStudents = [];
-        this.filteredStudents = [];
-        this.editingStudent = null;
-        this.currentSort = { sortBy: 'student_id', order: 'asc' };
-        this.searchTimeout = null;
-        this.selectedStudents = new Set(); // For bulk operations
+        // Pagination state
+        this.currentPage = 1;              // Current page number
+        this.totalPages = 1;               // Total number of pages
+        this.totalItems = 0;               // Total number of students
+        this.pageSize = 10;                // Students per page
+        
+        // Data storage
+        this.students = [];                // Current students (after filter & sort)
+        this.allStudents = [];             // All students from API
+        this.filteredStudents = [];        // Students after filtering
+        
+        // UI state
+        this.editingStudent = null;        // Student being edited
+        this.currentSort = { sortBy: 'student_id', order: 'asc' }; // Current sort
+        this.searchTimeout = null;         // Debounce timeout for search
+        this.selectedStudents = new Set(); // Set containing IDs of selected students
         
         // Wait for DOM to be ready before initializing
         if (document.readyState === 'loading') {
@@ -29,6 +43,9 @@ class StudentsManager {
         }
     }
 
+    /**
+     * Initialize tất cả components (Modal, Form, Table, Pagination, Filters)
+     */
     initializeComponents() {
         // Initialize components
         this.modal = new ModalManager('studentModal');
@@ -43,7 +60,7 @@ class StudentsManager {
             return;
         }
 
-        // Set up form validators
+        // Set up form validators cho từng field
         this.form.setValidator('student_id', (value) => validateStudentId(value));
         this.form.setValidator('first_name', (value) => validateName(value, 'Họ'));
         this.form.setValidator('last_name', (value) => validateName(value, 'Tên'));
@@ -63,48 +80,51 @@ class StudentsManager {
         this.filters.onFilterChange = (filters) => this.applyFilters(filters);
     }
 
+    /**
+     * Bind tất cả event handlers (buttons, inputs, filters)
+     */
     bindEvents() {
-        // Add student button
+        // Add student button - Mở modal thêm student mới
         document.getElementById('addStudentBtn').addEventListener('click', () => {
             this.openAddModal();
         });
 
-        // Search input with local filtering
+        // Search input with debounce - Tìm kiếm realtime
         const searchInput = document.getElementById('searchInput');
         if (searchInput) {
             searchInput.addEventListener('input', (e) => {
-                // Clear previous timeout
+                // Clear previous timeout để debounce
                 if (this.searchTimeout) {
                     clearTimeout(this.searchTimeout);
                 }
                 
-                // Set new timeout for local search
+                // Set new timeout for local search (150ms delay)
                 this.searchTimeout = setTimeout(() => {
-                    this.currentPage = 1; // Reset to first page when searching
+                    this.currentPage = 1; // Reset về trang 1 khi search
                     this.filters.setFilter('search', e.target.value);
-                }, 150); // Faster response for local search
+                }, 150);
             });
         }
 
-        // Filter selects
+        // Hometown filter dropdown
         const hometownFilter = document.getElementById('hometownFilter');
-        const gradeFilter = document.getElementById('gradeFilter');
-        
         if (hometownFilter) {
             hometownFilter.addEventListener('change', (e) => {
-                this.currentPage = 1; // Reset to first page when filtering
+                this.currentPage = 1;
                 this.filters.setFilter('hometown', e.target.value);
             });
         }
         
+        // Grade filter dropdown
+        const gradeFilter = document.getElementById('gradeFilter');
         if (gradeFilter) {
             gradeFilter.addEventListener('change', (e) => {
-                this.currentPage = 1; // Reset to first page when filtering
+                this.currentPage = 1;
                 this.filters.setFilter('grade', e.target.value);
             });
         }
         
-        // Clear filters button
+        // Clear all filters button
         const clearFiltersBtn = document.getElementById('clearFiltersBtn');
         if (clearFiltersBtn) {
             clearFiltersBtn.addEventListener('click', () => {
@@ -118,17 +138,20 @@ class StudentsManager {
         // Pagination events
         this.bindPaginationEvents();
         
-        // Page size selector
+        // Page size selector - Change số students mỗi trang
         const pageSizeSelect = document.getElementById('pageSizeSelect');
         if (pageSizeSelect) {
             pageSizeSelect.addEventListener('change', (e) => {
                 this.pageSize = parseInt(e.target.value);
-                this.currentPage = 1; // Reset to first page
+                this.currentPage = 1; // Reset về trang 1
                 this.applyLocalFilters();
             });
         }
     }
     
+    /**
+     * Clear tất cả filters (search, hometown, grade)
+     */
     clearAllFilters() {
         // Clear filter inputs
         const searchInput = document.getElementById('searchInput');
@@ -139,11 +162,14 @@ class StudentsManager {
         if (hometownFilter) hometownFilter.value = '';
         if (gradeFilter) gradeFilter.value = '';
         
-        // Clear filters and reset to first page
+        // Clear filters and reset về trang 1
         this.currentPage = 1;
         this.filters.clearFilters();
     }
     
+    /**
+     * Bind sorting events cho table headers
+     */
     bindSortingEvents() {
         const sortableHeaders = document.querySelectorAll('.sortable');
         sortableHeaders.forEach(header => {
@@ -151,11 +177,11 @@ class StudentsManager {
                 const sortBy = header.dataset.sort;
                 let order = 'asc';
                 
-                // Toggle order if same column
+                // Toggle order nếu click vào cùng column
                 if (this.currentSort.sortBy === sortBy) {
                     order = this.currentSort.order === 'asc' ? 'desc' : 'asc';
                 } else {
-                    // New column, start with ascending
+                    // Column mới, bắt đầu với ascending
                     order = 'asc';
                 }
                 
@@ -164,16 +190,19 @@ class StudentsManager {
             });
         });
         
-        // Initialize sort headers
+        // Initialize sort headers với sort mặc định
         this.updateSortHeaders(this.currentSort.sortBy, this.currentSort.order);
     }
 
+    /**
+     * Bind pagination events (previous, next, page numbers)
+     */
     bindPaginationEvents() {
         // Delegate pagination events to the pagination container
         const paginationContainer = document.getElementById('pagination');
         if (paginationContainer) {
             paginationContainer.addEventListener('click', (e) => {
-                // Page buttons with data-page attribute
+                // Page buttons với data-page attribute
                 if (e.target.hasAttribute('data-page') && !e.target.disabled) {
                     e.preventDefault();
                     const page = parseInt(e.target.dataset.page);
@@ -186,18 +215,32 @@ class StudentsManager {
         }
     }
     
+    /**
+     * Update sort indicators trên table headers
+     * @param {string} activeSortBy - Column đang sort
+     * @param {string} activeOrder - Order (asc/desc)
+     */
     updateSortHeaders(activeSortBy, activeOrder) {
         const sortableHeaders = document.querySelectorAll('.sortable');
         sortableHeaders.forEach(header => {
+            // Remove tất cả classes
             header.classList.remove('active', 'sort-asc', 'sort-desc');
             
+            // Add class cho column đang sort
             if (header.dataset.sort === activeSortBy) {
                 header.classList.add('active', `sort-${activeOrder}`);
             }
         });
     }
 
-    // Load all students from API only
+    // =====================================================
+    // DATA LOADING
+    // =====================================================
+    
+    /**
+     * Load tất cả students từ API
+     * Hàm này handle nhiều scenarios: load with/without pagination, fallback strategies
+     */
     async loadAllStudents() {
         try {
             this.table.setLoadingState();
@@ -291,7 +334,9 @@ class StudentsManager {
         }
     }
 
-    // Refresh display after data changes
+    /**
+     * Refresh toàn bộ display sau khi data thay đổi
+     */
     refreshDisplay() {
         this.applyLocalFilters();
         this.renderStudentsTable();
@@ -300,7 +345,9 @@ class StudentsManager {
         console.log('Display refreshed with', this.allStudents.length, 'total students');
     }
 
-    // Setup API change listener
+    /**
+     * Setup listener cho API changes (cross-tab synchronization)
+     */
     setupStorageListener() {
         // Listen for custom events when data changes
         window.addEventListener('studentsUpdated', () => {
@@ -325,12 +372,20 @@ class StudentsManager {
         });
     }
 
-    // Apply filters and sorting locally
+    // =====================================================
+    // FILTERING & SORTING
+    // =====================================================
+    
+    /**
+     * Apply filters và sorting locally (client-side)
+     * Hàm này filter -> sort -> paginate data từ allStudents
+     */
     applyLocalFilters() {
+        // Start với toàn bộ students
         let filteredStudents = [...this.allStudents];
         const filters = this.filters.getFilters();
         
-        // Apply search filter
+        // Filter theo search term (tìm trong nhiều fields)
         if (filters.search) {
             const searchTerm = filters.search.toLowerCase();
             filteredStudents = filteredStudents.filter(student => {
@@ -345,14 +400,14 @@ class StudentsManager {
             });
         }
         
-        // Apply hometown filter
+        // Filter theo hometown
         if (filters.hometown) {
             filteredStudents = filteredStudents.filter(student => 
                 student.hometown === filters.hometown
             );
         }
         
-        // Apply grade filter
+        // Filter theo grade (A, B, C, D, F)
         if (filters.grade) {
             filteredStudents = filteredStudents.filter(student => {
                 const grade = calculateGrade(student.average_score);
@@ -363,10 +418,10 @@ class StudentsManager {
         // Apply sorting
         this.sortStudents(filteredStudents);
         
-        // Store filtered students
+        // Lưu filtered students
         this.filteredStudents = filteredStudents;
         
-        // Apply pagination
+        // Calculate pagination
         this.totalItems = filteredStudents.length;
         this.totalPages = Math.ceil(this.totalItems / this.pageSize);
         
@@ -377,33 +432,38 @@ class StudentsManager {
             this.currentPage = 1;
         }
         
+        // Slice data cho current page
         const startIndex = (this.currentPage - 1) * this.pageSize;
         const endIndex = startIndex + this.pageSize;
         this.students = filteredStudents.slice(startIndex, endIndex);
         
+        // Render UI
         this.renderStudentsTable();
         this.renderPagination();
         this.updateStats();
         
-        // Update analytics if analytics section is active
+        // Update analytics nếu analytics section đang active
         if (window.analyticsManager && document.getElementById('analytics-section')?.classList.contains('active')) {
             window.analyticsManager.loadAnalytics();
         }
     }
     
-    // Sort students array locally
+    /**
+     * Sort students array in-place
+     * @param {Array} students - Array students cần sort
+     */
     sortStudents(students) {
         const { sortBy, order } = this.currentSort;
         
         students.sort((a, b) => {
             let aVal, bVal;
             
-            // Special handling for grade sorting
+            // Special handling cho grade sorting
             if (sortBy === 'grade') {
                 aVal = calculateGrade(a.average_score);
                 bVal = calculateGrade(b.average_score);
                 
-                // Grade order: A, B, C, D, F
+                // Grade order: A > B > C > D > F
                 const gradeOrder = { 'A': 1, 'B': 2, 'C': 3, 'D': 4, 'F': 5 };
                 aVal = gradeOrder[aVal] || 6;
                 bVal = gradeOrder[bVal] || 6;
@@ -415,25 +475,37 @@ class StudentsManager {
                 if (aVal == null) aVal = '';
                 if (bVal == null) bVal = '';
                 
-                // Convert to appropriate types
+                // Convert sang lowercase nếu là string
                 if (typeof aVal === 'string') aVal = aVal.toLowerCase();
                 if (typeof bVal === 'string') bVal = bVal.toLowerCase();
             }
             
+            // Compare values
             let comparison = 0;
             if (aVal < bVal) comparison = -1;
             else if (aVal > bVal) comparison = 1;
             
+            // Reverse nếu order là desc
             return order === 'desc' ? -comparison : comparison;
         });
     }
 
-    // Keep the old method for compatibility but make it use local filtering
+    /**
+     * Load students cho specific page (compatibility method)
+     * @param {number} page - Page number
+     */
     async loadStudents(page = 1) {
         this.currentPage = page;
         this.applyLocalFilters();
     }
 
+    // =====================================================
+    // RENDERING
+    // =====================================================
+    
+    /**
+     * Render students table với current students data
+     */
     renderStudentsTable() {
         this.table.clear();
 
@@ -624,22 +696,41 @@ class StudentsManager {
         });
     }
 
+    /**
+     * Change page (pagination)
+     * @param {number} page - Page number
+     */
     changePage(page) {
         this.currentPage = page;
         this.loadStudents(page);
     }
 
+    /**
+     * Apply filters (callback từ FilterManager)
+     * @param {Object} filters - Filter object
+     */
     applyFilters(filters) {
         this.currentPage = 1;
         this.applyLocalFilters();
     }
     
-    // Add sorting functionality
+    /**
+     * Apply sorting (callback từ sort headers)
+     * @param {string} sortBy - Column cần sort
+     * @param {string} order - asc hoặc desc
+     */
     applySorting(sortBy, order = 'asc') {
         this.currentSort = { sortBy, order };
         this.applyLocalFilters();
     }
 
+    // =====================================================
+    // CRUD OPERATIONS
+    // =====================================================
+    
+    /**
+     * Mở modal để thêm student mới
+     */
     openAddModal() {
         this.editingStudent = null;
         document.getElementById('modalTitle').textContent = 'Thêm sinh viên mới';
@@ -647,9 +738,14 @@ class StudentsManager {
         this.modal.show();
     }
 
+    /**
+     * Mở modal để edit student
+     * @param {string|number} studentId - ID của student cần edit
+     */
     async editStudent(studentId) {
         try {
             loading.show();
+            // Load student data từ API
             const student = await api.getStudent(studentId);
             
             this.editingStudent = student;
@@ -665,6 +761,10 @@ class StudentsManager {
         }
     }
 
+    /**
+     * Delete student (show confirmation trước)
+     * @param {string|number} studentId - ID của student cần delete
+     */
     async deleteStudent(studentId) {
         const student = this.allStudents.find(s => s.id === studentId);
         if (!student) {
@@ -678,12 +778,12 @@ class StudentsManager {
                 await api.deleteStudent(studentToDelete.id);
                 notifications.success('Xóa sinh viên thành công');
                 
-                // Dispatch delete event
+                // Dispatch delete event cho cross-tab sync
                 window.dispatchEvent(new CustomEvent('studentDeleted', {
                     detail: { id: studentToDelete.id, student: studentToDelete }
                 }));
                 
-                this.loadAllStudents(); // Refresh from API
+                this.loadAllStudents(); // Refresh data từ API
             } catch (error) {
                 console.error('Error deleting student:', error);
                 notifications.error(error.message || 'Không thể xóa sinh viên');
@@ -691,6 +791,10 @@ class StudentsManager {
         });
     }
 
+    /**
+     * Handle form submit (Create hoặc Update student)
+     * @param {Object} formData - Form data từ user
+     */
     async handleFormSubmit(formData) {
         try {
             const saveBtn = document.getElementById('saveBtn');
@@ -717,7 +821,7 @@ class StudentsManager {
             }
 
             this.modal.hide();
-            this.loadAllStudents(); // Refresh from API
+            this.loadAllStudents(); // Refresh data từ API
 
         } catch (error) {
             console.error('Error saving student:', error);

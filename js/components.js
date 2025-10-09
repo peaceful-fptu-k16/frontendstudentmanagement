@@ -1,20 +1,43 @@
-// UI Components and Common Functions
+// =====================================================
+// UI COMPONENTS AND COMMON FUNCTIONS
+// =====================================================
+// Module chứa các UI components: Notification, Loading, Modal, Form, Table, Pagination, Filter, Delete Modal
 
-// Notification System
+// =====================================================
+// NOTIFICATION SYSTEM
+// =====================================================
+
+/**
+ * NotificationManager Class
+ * Quản lý hiển thị notifications (success, error, warning, info)
+ * Support queue để show multiple notifications tuần tự
+ */
 class NotificationManager {
     constructor() {
         this.container = document.getElementById('notification');
-        this.queue = [];
-        this.isShowing = false;
+        this.queue = [];          // Queue chứa notifications pending
+        this.isShowing = false;   // Flag đang show notification
     }
 
+    /**
+     * Show notification
+     * @param {string} message - Message cần hiển thị
+     * @param {string} type - Type: success, error, warning, info
+     * @param {number} duration - Duration hiển thị (ms)
+     */
     show(message, type = 'info', duration = APP_CONFIG.NOTIFICATION.DURATION) {
+        // Add vào queue
         this.queue.push({ message, type, duration });
+        
+        // Process queue nếu không đang show
         if (!this.isShowing) {
             this.processQueue();
         }
     }
 
+    /**
+     * Process notification queue (show từng cái một)
+     */
     async processQueue() {
         if (this.queue.length === 0) {
             this.isShowing = false;
@@ -33,13 +56,18 @@ class NotificationManager {
         // Show notification
         this.container.classList.add('show');
 
-        // Hide after duration
+        // Hide sau duration
         setTimeout(() => {
             this.container.classList.remove('show');
-            setTimeout(() => this.processQueue(), 300); // Wait for animation
+            setTimeout(() => this.processQueue(), 300); // Wait animation xong
         }, duration);
     }
 
+    /**
+     * Get icon class dựa vào notification type
+     * @param {string} type - Notification type
+     * @returns {string} FontAwesome icon class
+     */
     getIcon(type) {
         const icons = {
             success: 'fas fa-check-circle',

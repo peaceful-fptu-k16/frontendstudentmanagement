@@ -1,17 +1,30 @@
-// Import/Export Module
+// =====================================================
+// IMPORT/EXPORT MODULE
+// =====================================================
+// Module xử lý import/export students data (Excel, CSV, XML)
+// Support: File upload, Drag & drop, Export selected, Template download
+
+/**
+ * ImportExportManager Class
+ * Quản lý tất cả import/export operations
+ */
 class ImportExportManager {
     constructor() {
-        this.selectedFile = null;
+        this.selectedFile = null;  // File được chọn để import
         
         this.bindEvents();
     }
 
+    /**
+     * Bind tất cả events (file upload, drag & drop, export, etc.)
+     */
     bindEvents() {
-        // File selection
+        // File selection button
         document.getElementById('selectFileBtn').addEventListener('click', () => {
             document.getElementById('importFile').click();
         });
 
+        // File input change
         document.getElementById('importFile').addEventListener('change', (e) => {
             this.handleFileSelect(e.target.files[0]);
         });
@@ -24,7 +37,7 @@ class ImportExportManager {
             this.handleImport();
         });
 
-        // Export buttons
+        // Export buttons (Excel, CSV)
         document.getElementById('exportExcelBtn').addEventListener('click', () => {
             this.handleExport('excel');
         });
@@ -33,7 +46,7 @@ class ImportExportManager {
             this.handleExport('csv');
         });
 
-        // Template download
+        // Template download button
         document.getElementById('downloadTemplateBtn').addEventListener('click', () => {
             this.downloadTemplate();
         });
