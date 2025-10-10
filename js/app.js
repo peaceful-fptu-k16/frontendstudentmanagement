@@ -64,7 +64,7 @@ class App {
             loading.show();
             
             // Call crawl API endpoint
-            const response = await api.fetch('/crawl', {
+            const response = await api.fetch('/crawler/generate-report', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
