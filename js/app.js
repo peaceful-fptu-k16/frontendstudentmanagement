@@ -68,7 +68,8 @@ class App {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
-                }
+                },
+                timeout: 30000  // 30 seconds
             });
 
             notifications.success('Crawl thành công! Dữ liệu đã được cập nhật.');
