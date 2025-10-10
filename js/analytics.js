@@ -330,7 +330,7 @@ class AnalyticsManager {
             insights.push({
                 type: 'warning',
                 icon: 'fa-exclamation-triangle',
-                title: 'Cần nâng cap chất lượng',
+                title: 'Cần nâng cấp chất lượng',
                 description: `Chỉ ${excellentRate.toFixed(1)}% sinh viên đạt loại xuất sắc. Cần có biện pháp hỗ trợ học tập.`
             });
         }

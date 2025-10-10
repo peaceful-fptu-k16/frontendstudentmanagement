@@ -258,14 +258,14 @@ class StudentsManager {
                 
                 let response;
                 try {
+                    // Try with page and page_size parameters
+                    response = await api.getStudents({ page: 1, page_size: 100 });
+                    console.log('Success with page=1, page_size=100');
+                } catch (pageError) {
+                    console.warn('Failed with page_size=100, trying with page=1 only:', pageError);
                     // Try with just page parameter
                     response = await api.getStudents({ page: 1 });
                     console.log('Success with page=1');
-                } catch (pageError) {
-                    console.warn('Failed with page=1, trying without parameters:', pageError);
-                    // Try with no parameters at all
-                    response = await api.getStudents();
-                    console.log('Success with no parameters');
                 }
                 
                 this.allStudents = response.items || [];
