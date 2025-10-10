@@ -25,7 +25,7 @@ const API_CONFIG = {
     },
     
     // Request timeout (milliseconds)
-    TIMEOUT: 10000, // 10 seconds
+    TIMEOUT: 30000, // 30 seconds
     
     // Flag to use mock data (for development without backend)
     USE_MOCK_DATA: false,

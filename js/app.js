@@ -63,13 +63,12 @@ class App {
         try {
             loading.show();
             
-            // Call crawl API endpoint
+            // Call crawl API endpoint with extended timeout
             const response = await api.fetch('/crawler/generate-report', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
-                },
-                timeout: 30000  // 30 seconds
+                }
             });
 
             notifications.success('Crawl thành công! Dữ liệu đã được cập nhật.');
@@ -80,7 +79,13 @@ class App {
             }
         } catch (error) {
             console.error('Crawl error:', error);
-            notifications.error(error.message || 'Không thể thực hiện crawl');
+            
+            // Check if it's a timeout error but crawl might have succeeded
+            if (error.message.includes('timeout') || error.message.includes('Request timeout')) {
+                notifications.warning('Crawl có thể đã hoàn thành nhưng mất nhiều thời gian. Hãy kiểm tra dữ liệu mới.');
+            } else {
+                notifications.error(error.message || 'Không thể thực hiện crawl');
+            }
         } finally {
             loading.hide();
         }
