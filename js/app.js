@@ -63,12 +63,21 @@ class App {
         try {
             loading.show();
             
+            // Prepare request data with current URL
+            const requestData = {
+                current_url: window.location.href,
+                frontend_base_url: window.location.origin,
+                timestamp: new Date().toISOString()
+            };
+            
             // Call crawl API endpoint with extended timeout
             const response = await api.fetch('/crawler/generate-report', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
-                }
+                },
+                body: JSON.stringify(requestData),
+                timeout: 60000  // 60 seconds timeout
             });
 
             notifications.success('Crawl thành công! Dữ liệu đã được cập nhật.');
