@@ -321,21 +321,20 @@ body {
     table-layout: fixed; /* Fixed layout for better control */
 }
 
-.students-table th:nth-child(1) { width: 3%; }   /* Checkbox */
-.students-table th:nth-child(2) { width: 3%; }  /* Mã SV */
-.students-table th:nth-child(3) { width: 6%; }  /* Họ tên */
-.students-table th:nth-child(4) { width: 21%; }  /* Email */
-.students-table th:nth-child(5) { width: 10%; }   /* Ngày sinh */
-.students-table th:nth-child(6) { width: 10%; }  /* Quê quán */
-.students-table th:nth-child(7) { width: 10%; }   /* Điểm Toán */
-.students-table th:nth-child(8) { width: 10%; }   /* Điểm Văn */
-.students-table th:nth-child(9) { width: 10%; }   /* Điểm Anh */
-.students-table th:nth-child(10) { width: 10%; }  /* Điểm TB */
-.students-table th:nth-child(11) { width: 10%; }  /* Xếp loại */
-.students-table th:nth-child(12) { width: 7%; }  /* Thao tác */
+.students-table th:nth-child(1) { width: 8%; }  /* Mã SV */
+.students-table th:nth-child(2) { width: 15%; }  /* Họ tên */
+.students-table th:nth-child(3) { width: 25%; }  /* Email */
+.students-table th:nth-child(4) { width: 12%; }   /* Ngày sinh */
+.students-table th:nth-child(5) { width: 12%; }  /* Quê quán */
+.students-table th:nth-child(6) { width: 8%; }   /* Điểm Toán */
+.students-table th:nth-child(7) { width: 8%; }   /* Điểm Văn */
+.students-table th:nth-child(8) { width: 8%; }   /* Điểm Anh */
+.students-table th:nth-child(9) { width: 8%; }  /* Điểm TB */
+.students-table th:nth-child(10) { width: 8%; }  /* Xếp loại */
+.students-table th:nth-child(11) { width: 8%; }  /* Thao tác */
 
 /* Text truncation for long content */
-.students-table td:nth-child(4) { /* Email column */
+.students-table td:nth-child(3) { /* Email column */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -344,7 +343,7 @@ body {
 }
 
 /* Email tooltip */
-.students-table td:nth-child(4):hover::after {
+.students-table td:nth-child(3):hover::after {
     content: attr(title);
     position: absolute;
     background: #2d3748;
@@ -361,7 +360,7 @@ body {
     animation: tooltipFadeIn 0.2s ease;
 }
 
-.students-table td:nth-child(4):hover::before {
+.students-table td:nth-child(3):hover::before {
     content: '';
     position: absolute;
     top: -8px;
@@ -383,9 +382,9 @@ body {
     }
 }
 
-.students-table td:nth-child(2), /* Student ID column */
-.students-table td:nth-child(3), /* Name column */
-.students-table td:nth-child(6) { /* Hometown column */
+.students-table td:nth-child(1), /* Student ID column */
+.students-table td:nth-child(2), /* Name column */
+.students-table td:nth-child(5) { /* Hometown column */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -393,7 +392,7 @@ body {
 }
 
 /* Student ID styling */
-.students-table td:nth-child(2) {
+.students-table td:nth-child(1) {
     font-family: 'Inter', sans-serif;
     font-weight: 500;
     font-size: 0.9rem;
@@ -415,18 +414,8 @@ body {
     vertical-align: middle;
 }
 
-.students-table th.select-column {
-    text-align: center;
-    padding: 1rem 0.5rem;
-}
-
 .students-table th.actions-column {
     text-align: center;
-}
-
-.students-table td:first-child {
-    text-align: center;
-    padding: 1rem 0.5rem;
 }
 
 .students-table td:last-child {
@@ -434,24 +423,24 @@ body {
 }
 
 /* Score columns - center aligned */
-.students-table th:nth-child(7),  /* Điểm Toán */
-.students-table th:nth-child(8),  /* Điểm Văn */
-.students-table th:nth-child(9),  /* Điểm Anh */
-.students-table th:nth-child(10), /* Điểm TB */
-.students-table th:nth-child(11), /* Xếp loại */
+.students-table th:nth-child(6),  /* Điểm Toán */
+.students-table th:nth-child(7),  /* Điểm Văn */
+.students-table th:nth-child(8),  /* Điểm Anh */
+.students-table th:nth-child(9), /* Điểm TB */
+.students-table th:nth-child(10), /* Xếp loại */
+.students-table td:nth-child(6),
 .students-table td:nth-child(7),
 .students-table td:nth-child(8),
 .students-table td:nth-child(9),
-.students-table td:nth-child(10),
-.students-table td:nth-child(11) {
+.students-table td:nth-child(10) {
     text-align: center;
     font-weight: 500;
 }
 
 /* Individual score cells styling */
-.students-table td:nth-child(7), /* Điểm Toán */
-.students-table td:nth-child(8), /* Điểm Văn */
-.students-table td:nth-child(9) { /* Điểm Anh */
+.students-table td:nth-child(6), /* Điểm Toán */
+.students-table td:nth-child(7), /* Điểm Văn */
+.students-table td:nth-child(8) { /* Điểm Anh */
     font-family: 'Courier New', monospace;
     font-weight: 600;
     background-color: #f8fafe;
@@ -459,7 +448,7 @@ body {
 }
 
 /* Make average score bold and highlighted */
-.students-table td:nth-child(10) {
+.students-table td:nth-child(9) {
     font-weight: 700;
     font-family: 'Courier New', monospace;
     background-color: #fef5e7;
@@ -468,7 +457,7 @@ body {
 }
 
 /* Grade styling */
-.students-table td:nth-child(11) {
+.students-table td:nth-child(10) {
     font-weight: 600;
     text-transform: uppercase;
     font-size: 0.85rem;
@@ -476,8 +465,8 @@ body {
 }
 
 /* Date column - center aligned */
-.students-table th:nth-child(5),  /* Ngày sinh */
-.students-table td:nth-child(5) {
+.students-table th:nth-child(4),  /* Ngày sinh */
+.students-table td:nth-child(4) {
     text-align: center;
 }
 
@@ -521,24 +510,7 @@ body {
     content: "\f0de"; /* fa-sort-up */
 }
 
-/* Checkbox styling */
-.student-checkbox,
-#selectAllStudents {
-    width: 18px;
-    height: 18px;
-    accent-color: #4299e1;
-    cursor: pointer;
-}
 
-.student-checkbox:checked,
-#selectAllStudents:checked {
-    background-color: #4299e1;
-}
-
-/* Indeterminate state styling */
-#selectAllStudents:indeterminate {
-    background-color: #ed8936;
-}
 
 .students-table th.sort-desc .sort-icon {
     color: #667eea;
@@ -566,14 +538,14 @@ body {
     transform: translateX(2px);
 }
 
+.students-table tbody tr:hover td:nth-child(6),
 .students-table tbody tr:hover td:nth-child(7),
-.students-table tbody tr:hover td:nth-child(8),
-.students-table tbody tr:hover td:nth-child(9) {
+.students-table tbody tr:hover td:nth-child(8) {
     background-color: #e6f3ff;
     border-radius: 4px;
 }
 
-.students-table tbody tr:hover td:nth-child(10) {
+.students-table tbody tr:hover td:nth-child(9) {
     background-color: #fff4e6;
     border-radius: 4px;
 }

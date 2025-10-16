@@ -524,12 +524,6 @@ class StudentsManager {
             const isSelected = this.selectedStudents.has(student.id);
             
             const row = this.table.addRow(`
-                <td>
-                    <input type="checkbox" class="student-checkbox" 
-                           value="${student.id}" 
-                           ${isSelected ? 'checked' : ''} 
-                           onchange="studentsManager.toggleStudentSelection(${student.id}, this.checked)">
-                </td>
                 <td><strong>${escapeHtml(student.student_id)}</strong></td>
                 <td>${escapeHtml(student.full_name || `${student.first_name} ${student.last_name}`)}</td>
                 <td title="${escapeHtml(student.email || '')}">${escapeHtml(student.email || '')}</td>
